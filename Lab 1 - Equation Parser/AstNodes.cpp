@@ -25,6 +25,12 @@ cAstOperation::cAstOperation(iAstNode * left, char op, iAstNode * right):
 	_op(op), _left(left), _right(right)
 {}
 
+cAstOperation::~cAstOperation()
+{
+	delete Left();
+	delete Right();
+}
+
 std::string cAstOperation::GenerateAsm(std::ostream & out, int & ip)
 {
 	using std::string;
@@ -32,24 +38,22 @@ std::string cAstOperation::GenerateAsm(std::ostream & out, int & ip)
 	
 	string left = Left()->GenerateAsm(out, ip);
 	string right = Right()->GenerateAsm(out,ip);
+	
 	ostringstream retValue;
 	
 	switch(_op)
 	{
 	case '+':
-		out << "\t%" << ++ip << " = add i32 " << left << ", " << right << '\n';
-		break;
-	case '-':
-		out << "\t%" << ++ip << " = sub i32 " << left << ", " << right << '\n';
+		out << "\t%" << ++ip << " = add i32 " << right << ", " << left << '\n';
 		break;
 	case '*':
 		out << "\t%" << ++ip << " = mul i32 " << left << ", " << right << '\n';
 		break;
 	case '/':
-		out << "\t%" << ++ip << " = udiv i32 " << left << ", " << right << '\n';
+		out << "\t%" << ++ip << " = sdiv i32 " << left << ", " << right << '\n';
 		break;
 	default:
-		out << "Invalid Operation Symbol not found\n";
+		out << "Invalid Operation - Symbol not found\n";
 		break;
 	}
 	

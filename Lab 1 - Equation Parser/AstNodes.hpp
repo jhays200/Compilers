@@ -27,6 +27,7 @@ class cAstOperation: public iAstNode
 {
 public:
 	cAstOperation(iAstNode * left, char op, iAstNode * right);
+	virtual ~cAstOperation();
 	virtual std::string GenerateAsm(std::ostream & out, int & ip);
 	iAstNode * _left;
 	iAstNode * _right;

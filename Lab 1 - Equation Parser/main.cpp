@@ -38,6 +38,8 @@ int main()
 				OutputAssembly(treeTop, out);
 				cout << "\nParser Contents: \n"
 					<< out.rdbuf() << endl;
+
+				delete treeTop;
 			}
 			catch(const char * error)
 			{
@@ -55,13 +57,10 @@ int main()
 
 void OutputAssembly(iAstNode * treeTop, std::ostream & output)
 {
-	int ip = 1;
+	int ip = 0;
 
 	output 	<< "@.str = private constant [13 x i8] c\"result = %d\\0A\\00\"\n\n"
-				<< "define i32 @main() nounwind {\n"
-				  //allocate integer space onto the stack
-				<< "\t%result = alloca i32, align 4\n"
-				<< "\t%1 = alloca i32, align 4\n\n";
+				<< "define i32 @main() nounwind {\n";
 
 	treeTop->GenerateAsm(output, ip);
 

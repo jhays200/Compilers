@@ -43,7 +43,7 @@ iAstNode * Parser::Expr()
 
 	if(addend)
 	{
-		addend->_left = factor;
+		addend->_right = factor;
 		return addend;
 	}
 	
@@ -157,13 +157,20 @@ cAstOperation * Parser::Addend()
 		iAstNode * factor = Factor();
 		cAstOperation * addend = Addend();
 
+		//Subtraction shouldn't exist, so multiply by -1 instead
+		if(opChar == '-')
+		{
+			iAstNode * negationFactor = new cAstOperation(new cAstLiteral(-1), '*', factor);
+			factor = negationFactor;
+		}
+
 		if(addend)
 		{
-			addend->_left = factor;
+			addend->_right = factor;
 			factor = addend;
 		}
 
-		return new cAstOperation(0, opChar, factor);
+		return new cAstOperation(factor, '+', 0);
 	}
 
 	return 0;
