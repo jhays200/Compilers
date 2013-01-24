@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 2.8)
+
+PROJECT(Lab1 CXX)
+#version
+set (${PROJECT_NAME}_VERSION_MAJOR 1)
+set (${PROJECT_NAME}_VERSION_MINOR 0)
+
+file(GLOB SRC_LIST ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB HEADERS ${PROJECT_SOURCE_DIR}/*.hpp)
+
+if (WIN32)
+	set(SRC_LIST ${SRC_LIST} ${HEADERS})
+endif(WIN32)
+
+add_executable(${PROJECT_NAME} ${SRC_LIST})
