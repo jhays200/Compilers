@@ -43,12 +43,12 @@ int main()
 			}
 			catch(const char * error)
 			{
-				cout << error << endl;
+				cout << "Parser Error: " << error << endl;
 			}
 		}
 		catch(string error)
 		{
-			cout << error << endl;
+			cout <<"Tokenizer Error: " << error << endl;
 		}
 	} while(ContinueProgram());
 
@@ -57,12 +57,21 @@ int main()
 
 void OutputAssembly(iAstNode * treeTop, std::ostream & output)
 {
-	int ip = 0;
+	std::string retGenerateAsm;
+	int ip = 1;
 
 	output 	<< "@.str = private constant [13 x i8] c\"result = %d\\0A\\00\"\n\n"
-				<< "define i32 @main() nounwind {\n";
+				<< "define i32 @main() nounwind {\n"
+				<< "\t%1 = alloca i32, align 4\n";
 
-	treeTop->GenerateAsm(output, ip);
+	retGenerateAsm = treeTop->GenerateAsm(output, ip);
+
+	if(retGenerateAsm[0] != '%')
+	{
+		++ip;
+		output << "\tstore i32 " << retGenerateAsm << ", i32 * %1, align 4\n"
+				<< "\t%" << ip << " = load i32 * %1, align 4\n";
+	}
 
 	output 	<< "\n\t%call = call i32 (i8*, ...)*"
 				<< " @printf(i8* getelementptr inbounds "
@@ -201,6 +210,9 @@ void CheckValid(Token & workingToken, char c)
 		if(isalpha(c))
 			workingToken.type = Token::Id;
 	}
+
+	if(!isalnum(c))
+		throw std::string("id or num must have a [0-9a-zA-Z] token");
 
 	if(workingToken.type == Token::Num
 		&& isalpha(c))

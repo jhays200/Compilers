@@ -28,6 +28,9 @@ iAstNode * Parser::Start(std::list<Token> & tokenList)
 
 	throw "Invalid Id";
 
+	if(_currToken.type == Token::Eof)
+		throw "S-> id = Expr does not parse entire string";
+
 	return 0;
 }
 //Expr -> Factor Addend
@@ -40,6 +43,8 @@ iAstNode * Parser::Expr()
 	{
 		addend = Addend();
 	}
+	else
+		throw "No Factor Found";
 
 	if(addend)
 	{
@@ -92,6 +97,8 @@ iAstNode * Parser::Factor()
 		
 		return term;
 	}
+
+	throw "Invalid Factor Found";
 
 	return 0;
 }
