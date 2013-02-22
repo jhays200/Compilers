@@ -25,30 +25,30 @@ class Tokenizer
 	Regex validBufferRx;
 	//Regex validCharRx;
 
-	static void Main()
-	{
-		Console.Write("Enter Path to Tokenize:");
-		string path = Console.ReadLine();
-		using (StreamReader sr = new StreamReader(path))
-		{
-			try
-			{
-				Tokenizer t = new Tokenizer(sr);
+    //static void Main()
+    //{
+    //    Console.Write("Enter Path to Tokenize:");
+    //    string path = Console.ReadLine();
+    //    using (StreamReader sr = new StreamReader(path))
+    //    {
+    //        try
+    //        {
+    //            Tokenizer t = new Tokenizer(sr);
 
-				while (t.currentSymbol.type != StateSymbol.Type.Eof)
-				{
-					Console.WriteLine("Type {0}\tValue {1}", t.currentSymbol.type.GetType(), t.currentSymbol.value);
-					t.GetNextSymbol();
-				}
-			}
-			catch (System.Exception exp)
-			{
-				Console.WriteLine(exp.Message);
-				Console.Write(exp.StackTrace);
-			}
-		}
-		Console.ReadLine();
-	}
+    //            while (t.currentSymbol.type != StateSymbol.Type.Eof)
+    //            {
+    //                Console.WriteLine("Type {0}\tValue {1}", t.currentSymbol.type.GetType(), t.currentSymbol.value);
+    //                t.GetNextSymbol();
+    //            }
+    //        }
+    //        catch (System.Exception exp)
+    //        {
+    //            Console.WriteLine(exp.Message);
+    //            Console.Write(exp.StackTrace);
+    //        }
+    //    }
+    //    Console.ReadLine();
+    //}
 
     public Tokenizer(StreamReader input)
     {
