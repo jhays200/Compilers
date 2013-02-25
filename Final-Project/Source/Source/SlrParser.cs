@@ -22,13 +22,24 @@ class SlrParser
 			{Tuple.Create(0,StateSymbol.Type.Begin), Tuple.Create<SlrFunction,int>(Shift, 1)},
 			
 			//S0 = 1
-			{Tuple.Create(1,StateSymbol.Type.If), Tuple.Create<SlrFunction,int>(Shift, 2)},
+			//{Tuple.Create(1,StateSymbol.Type.If), Tuple.Create<SlrFunction,int>(Shift, 4)},
 			{Tuple.Create(1,StateSymbol.Type.Goto), Tuple.Create<SlrFunction,int>(Shift, 3)},
-			{Tuple.Create(1,StateSymbol.Type.Id), Tuple.Create<SlrFunction,int>(Shift, 4)},
+			{Tuple.Create(1,StateSymbol.Type.Id), Tuple.Create<SlrFunction,int>(Shift, 2)},
 
 			//I1=2
 			{Tuple.Create(2,StateSymbol.Type.Colon), Tuple.Create<SlrFunction,int>(Shift, 1)},
-			{Tuple.Create(2,StateSymbol.Type.Assign), Tuple.Create<SlrFunction,int>(Shift, 1)},
+			{Tuple.Create(2,StateSymbol.Type.Assign), Tuple.Create<SlrFunction,int>(Shift, 4)},
+			
+			//Goto1=3
+			{Tuple.Create(3,StateSymbol.Type.Id), Tuple.Create<SlrFunction,int>(Exec, 2)},
+			
+			//E0=4
+			{Tuple.Create(4,StateSymbol.Type.EXP), Tuple.Create<SlrFunction,int>(Exec, 4)},
+			{Tuple.Create(4,StateSymbol.Type.L_Paren), Tuple.Create<SlrFunction,int>(Shift, 4)},
+			
+			//E1=5
+			{Tuple.Create(5,StateSymbol.Type.EXP), Tuple.Create<SlrFunction,int>(Exec, 4)},
+			{Tuple.Create(5,StateSymbol.Type.L_Paren), Tuple.Create<SlrFunction,int>(Shift, 4)},
 		};
 	}
 
