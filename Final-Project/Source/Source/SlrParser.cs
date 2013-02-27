@@ -34,12 +34,23 @@ class SlrParser
 			{Tuple.Create(3,StateSymbol.Type.Id), Tuple.Create<SlrFunction,int>(Exec, 2)},
 			
 			//E0=4
-			{Tuple.Create(4,StateSymbol.Type.EXP), Tuple.Create<SlrFunction,int>(Exec, 4)},
+			//reduces
+			{Tuple.Create(4,StateSymbol.Type.Int), Tuple.Create<SlrFunction,int>(Reduce, 13)},
+			{Tuple.Create(4,StateSymbol.Type.Id), Tuple.Create<SlrFunction,int>(Reduce, 14)},
+			//shift
+			{Tuple.Create(4,StateSymbol.Type.Exp), Tuple.Create<SlrFunction,int>(Goto, 5)},
+			//goto
 			{Tuple.Create(4,StateSymbol.Type.L_Paren), Tuple.Create<SlrFunction,int>(Shift, 4)},
 			
 			//E1=5
-			{Tuple.Create(5,StateSymbol.Type.EXP), Tuple.Create<SlrFunction,int>(Exec, 4)},
-			{Tuple.Create(5,StateSymbol.Type.L_Paren), Tuple.Create<SlrFunction,int>(Shift, 4)},
+			//shifts
+			{Tuple.Create(5,StateSymbol.Type.Op), Tuple.Create<SlrFunction,int>(Shift, 4)},
+			{Tuple.Create(5,StateSymbol.Type.Rel), Tuple.Create<SlrFunction,int>(Shift, 4)},
+			//reduces
+			{Tuple.Create(5,StateSymbol.Type.R_Paren), Tuple.Create<SlrFunction,int>(Reduce, )},
+			//special reduce 
+			{Tuple.Create(5,StateSymbol.Type.EXP), Tuple.Create<SlrFunction,int>(Reduce, )},
+			{Tuple.Create(5,StateSymbol.Type.EXP), Tuple.Create<SlrFunction,int>(Reduce, )},
 		};
 	}
 
@@ -132,7 +143,7 @@ class SlrParser
 				break;
 			//EXP -> id
 			case 14:
-				Console.WriteLine("EXP -> int");
+				Console.WriteLine("EXP -> id");
 				break;
 			//EXP -> ( <EXP> op <EXP> )
 			case 15:
