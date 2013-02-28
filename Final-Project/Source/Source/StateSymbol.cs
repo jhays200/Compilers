@@ -37,19 +37,18 @@ class StateSymbol
 
 	public string value {get; set;}
     public Type type { get; set; }
-    public AstNode production { get; set; }
 
-	public StateSymbol(Type type, AstNode node)
+	public StateSymbol(Type type)
 	{
 		this.type = type;
 		this.value = String.Empty;
-		production = node;
+		//production = node;
 	}
 
 	public StateSymbol(Type type, string value)
     {
         this.type = type;
         this.value = value;
-        production = null;
+        //production = null;
     }
 }
