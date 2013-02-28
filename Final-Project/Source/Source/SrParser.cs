@@ -153,7 +153,7 @@ class SrParser
             {Tuple.Create(26,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 27)},
 
             //State 27
-            {Tuple.Create(26,StateSymbol.Type.R_Paren), Tuple.Create<SrFunction,int>(Shift, 28)},
+            {Tuple.Create(27,StateSymbol.Type.R_Paren), Tuple.Create<SrFunction,int>(Shift, 28)},
 
             //State 28
             {Tuple.Create(28,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 15)},
@@ -206,21 +206,12 @@ class SrParser
 
 	}
 
-    private void ReduceToNextState()
+    private void PopStates(int count)
     {
-        bool keepLooping = true;
-
-        while (keepLooping)
-        {
-            Tuple<int,StateSymbol.Type> lookup = Tuple.Create(stateStack.Peek(), t.currentSymbol.type);
-            if (srTable.ContainsKey(lookup))
-            {
-                keepLooping = false;
-                srTable[lookup].Item1(srTable[lookup].Item2);
-            }
-            else
-                stateStack.Pop();
-        }
+        for(; count != 0; count--)
+		{
+			stateStack.Pop();
+		}
     }
 
 	private void Reduce(int state)
@@ -238,7 +229,8 @@ class SrParser
 
 				if (symbolStack.Pop().type != StateSymbol.Type.Begin)
 					throw new SystemException("<Begin> not found");
-
+			
+				PopStates(3);
 				symbolStack.Push(new StateSymbol(StateSymbol.Type.PROG));
 				break;
 			//STL -> <ST>
@@ -247,9 +239,9 @@ class SrParser
 
 				if (symbolStack.Pop().type != StateSymbol.Type.ST)
 					throw new SystemException("<ST> not found");
-
+			
+				PopStates(1);
 				symbolStack.Push(new StateSymbol(StateSymbol.Type.STL));
-
 				break;
 			//STL -> <STL> ; <ST>
 			case 2:
@@ -263,7 +255,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.STL)
                     throw new SystemException("<STL> not found");
-
+			
+				PopStates (3);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.STL));
                 
                break;
@@ -273,7 +266,8 @@ class SrParser
 
                 if(symbolStack.Pop().type != StateSymbol.Type.LST)
                     throw new SystemException("<LST> not found");
-
+			
+				PopStates(1);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.ST));
                 break;
             //ST -> ULST
@@ -282,7 +276,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.ULST)
                     throw new SystemException("<ULST> not found");
-
+			
+				PopStates(1);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.ST));
                 break;
             //LST -> id : <ULST>
@@ -295,7 +290,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.ASSIGN)
                     throw new SystemException("<ASSIGN> not found");
-
+			
+				PopStates(1);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST));
                 break;
             //ULST -> <GOTO>
@@ -318,7 +314,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Id)
                     throw new SystemException("Id not found");
-
+			
+				PopStates(3);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.ASSIGN));
 
                 break;
@@ -340,7 +337,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Int)
                     throw new SystemException("Int not found");
-
+			
+				PopStates(1);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP));
                 break;
             //EXP -> id
@@ -349,7 +347,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Id)
                     throw new SystemException("Id not found");
-
+			
+				PopStates(1);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP));
                 break;
             //EXP -> ( <EXP> op <EXP> )
@@ -370,7 +369,8 @@ class SrParser
 
                 if (symbolStack.Pop().type != StateSymbol.Type.L_Paren)
                     throw new SystemException("( not found");
-
+			
+				PopStates(5);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP));
 
                 break;
@@ -385,8 +385,15 @@ class SrParser
             default:
                 throw new SystemException("Reduce what?");
 		}
-
-        ReduceToNextState();
+		
+		//Goto the next symbol
+		Tuple<int,StateSymbol.Type> lookup = Tuple.Create(stateStack.Peek(),symbolStack.Peek().type);
+		if(srTable.ContainsKey(lookup))
+		{
+			srTable[lookup].Item1(srTable[lookup].Item2);
+		}
+		else
+			throw new SystemException("No Idea what state to goto");
 	}
 
 	private void Shift(int state)
@@ -403,12 +410,21 @@ class SrParser
 
     public static void Main()
     {
-        Console.Write("Enter Path to Tokenize:");
-        string path = Console.ReadLine();
+        //Console.Write("Enter Path to Tokenize:");
+        string path = "/storage/dev/Compilers/Final-Project/Source/test1.txt";//Console.ReadLine();
         SrParser sp = new SrParser();
-
-        sp.Compile(new StreamReader(path));
-
+		
+		try {
+			using(StreamReader sr = new StreamReader(path))
+			{
+	        	sp.Compile(new StreamReader(path));
+			}
+		}
+		catch(SystemException se)
+		{
+			Console.WriteLine ("Fatal Error: " + se.Message);
+		}
+		
         Console.ReadLine();
     }
 
