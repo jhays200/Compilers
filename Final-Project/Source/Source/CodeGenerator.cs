@@ -7,5 +7,9 @@ using System.Threading.Tasks;
 
 class CodeGenerator
 {
+    
+    public void WriteLine(string line)
+    {
+    }
 }
 
