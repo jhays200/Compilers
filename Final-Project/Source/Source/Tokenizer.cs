@@ -10,7 +10,7 @@ class Tokenizer
 	//internal data
     const int QUEUE_LENGTH = 12;
 	private readonly Dictionary<string, StateSymbol> tokenTable;
-    private StreamReader inputStream;
+    private TextReader inputStream;
     private Queue<StateSymbol> tokenQueue;
 	string buffer;
     
@@ -50,7 +50,7 @@ class Tokenizer
     //    Console.ReadLine();
     //}
 
-    public Tokenizer(StreamReader input)
+    public Tokenizer(TextReader input)
     {
         inputStream = input;
         tokenQueue = new Queue<StateSymbol>(QUEUE_LENGTH);

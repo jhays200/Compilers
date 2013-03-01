@@ -19,69 +19,6 @@ class SrParser
 
 		srTable = new Dictionary<Tuple<int, StateSymbol.Type>, Tuple<SrFunction, int>>()
 		{
-            /*
-			//PROG0 = 0
-			{Tuple.Create(0,StateSymbol.Type.Begin), Tuple.Create<SrFunction,int>(Shift, 1)},
-			
-			//S0 = 1
-			//{Tuple.Create(1,StateSymbol.Type.If), Tuple.Create<SrFunction,int>(Shift, 4)},
-			//{Tuple.Create(1,StateSymbol.Type.Goto), Tuple.Create<SrFunction,int>(Shift, 3)},
-			{Tuple.Create(1,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 2)},
-
-			//I1=2
-			//{Tuple.Create(2,StateSymbol.Type.Colon), Tuple.Create<SrFunction,int>(Shift, 1)},
-			{Tuple.Create(2,StateSymbol.Type.Assign), Tuple.Create<SrFunction,int>(Shift, 4)},
-			
-			//Goto1=3
-			//{Tuple.Create(3,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Exec, 2)},
-			
-			//E0=4
-			//reduces
-			{Tuple.Create(4,StateSymbol.Type.Int), Tuple.Create<SrFunction,int>(Shift, 6)},
-			{Tuple.Create(4,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 6)},
-			//shift
-			//{Tuple.Create(4,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(Shift, (int)StateSymbol.Type.EXP)},
-			//goto
-			{Tuple.Create(4,StateSymbol.Type.L_Paren), Tuple.Create<SrFunction,int>(Shift, 4)},
-			
-			//E1=5
-
-			//shifts
-			{Tuple.Create(5,StateSymbol.Type.Op), Tuple.Create<SrFunction,int>(Shift, 4)},
-			{Tuple.Create(5,StateSymbol.Type.Rel), Tuple.Create<SrFunction,int>(Shift, 4)},
-
-			//reduces
-            //<EXP> -> ( <EXP> op <EXP> )
-			{Tuple.Create(5,StateSymbol.Type.R_Paren), Tuple.Create<SrFunction,int>(Reduce, 15)},
-
-			//special reduce 
-            //<BOOL> -> <EXP> rel <EXP> || ST - > id _ <EXP>
-			{Tuple.Create(5,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(Reduce, 9)},
-            
-            //goto
-            {Tuple.Create(5,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 9)},
-
-            //I0=6
-            //EXP -> int
-            {Tuple.Create(6,StateSymbol.Type.Int), Tuple.Create<SrFunction,int>(Reduce, 13)},
-            //EXP -> Id
-			{Tuple.Create(6,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Reduce, 14)},
-
-            //I0=goto
-            {Tuple.Create(6,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 5)},
-            {Tuple.Create(6,StateSymbol.Type.ST), Tuple.Create<SrFunction,int>(GotoState, 7)},
-            {Tuple.Create(6,StateSymbol.Type.BOOL), Tuple.Create<SrFunction,int>(GotoState, 8)},
-
-            //S1=7
-            {Tuple.Create(7,StateSymbol.Type.ST), Tuple.Create<SrFunction,int>(GotoState, 5)},
-            {Tuple.Create(7,StateSymbol.Type.ST), Tuple.Create<SrFunction,int>(GotoState, 7)},
-            {Tuple.Create(7,StateSymbol.Type.BOOL), Tuple.Create<SrFunction,int>(GotoState, 8)},
-
-            //B1=8
-             */
-
-            
-
             //State 0
             {Tuple.Create(0,StateSymbol.Type.Begin), Tuple.Create<SrFunction,int>(Shift, 2)},
             {Tuple.Create(0,StateSymbol.Type.PROG), Tuple.Create<SrFunction,int>(GotoState, 1)},
@@ -97,13 +34,31 @@ class SrParser
             {Tuple.Create(2,StateSymbol.Type.LST), Tuple.Create<SrFunction,int>(GotoState, 8)},
             {Tuple.Create(2,StateSymbol.Type.ULST), Tuple.Create<SrFunction,int>(GotoState, 9)},
             {Tuple.Create(2,StateSymbol.Type.ASSIGN), Tuple.Create<SrFunction,int>(GotoState, 10)},
+            {Tuple.Create(2,StateSymbol.Type.GOTO), Tuple.Create<SrFunction,int>(GotoState, 11)},
+            {Tuple.Create(2,StateSymbol.Type.CD), Tuple.Create<SrFunction,int>(GotoState, 12)},
 
             //State 3
             {Tuple.Create(3,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Shift, 4)},
-            //{Tuple.Create(3,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Shift, 5)},
+            {Tuple.Create(3,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Shift, 5)},
 
             //State 4
             {Tuple.Create(4,StateSymbol.Type.Eof), Tuple.Create<SrFunction,int>(Reduce, 0)},
+
+            //State 5
+            {Tuple.Create(5,StateSymbol.Type.Goto), Tuple.Create<SrFunction,int>(Shift, 13)},
+            {Tuple.Create(5,StateSymbol.Type.If), Tuple.Create<SrFunction,int>(Shift, 15)},
+            {Tuple.Create(5,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 31)},
+
+            {Tuple.Create(5,StateSymbol.Type.ST), Tuple.Create<SrFunction,int>(GotoState, 6)},
+            {Tuple.Create(5,StateSymbol.Type.LST), Tuple.Create<SrFunction,int>(GotoState, 8)},
+            {Tuple.Create(5,StateSymbol.Type.ULST), Tuple.Create<SrFunction,int>(GotoState, 9)},
+            {Tuple.Create(5,StateSymbol.Type.ASSIGN), Tuple.Create<SrFunction,int>(GotoState, 10)},
+            {Tuple.Create(5,StateSymbol.Type.GOTO), Tuple.Create<SrFunction,int>(GotoState, 11)},
+            {Tuple.Create(5,StateSymbol.Type.CD), Tuple.Create<SrFunction,int>(GotoState, 12)},
+
+            //State 6
+            {Tuple.Create(6,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 2)},
+            {Tuple.Create(6,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 2)},
 
             //State 7
             {Tuple.Create(7,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 1)},
@@ -120,6 +75,60 @@ class SrParser
             //State 10
             {Tuple.Create(10,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 6)},
             {Tuple.Create(10,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 6)},
+
+            //State 11
+            {Tuple.Create(11,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 7)},
+            {Tuple.Create(11,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 7)},
+
+            //State 12
+            {Tuple.Create(12,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 8)},
+            {Tuple.Create(12,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 8)},
+
+            //State 13
+            {Tuple.Create(13,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 14)},
+
+            //State 14
+            {Tuple.Create(14,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 10)},
+            {Tuple.Create(14,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 10)},
+
+            //State 15
+            {Tuple.Create(15,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 23)},
+            {Tuple.Create(15,StateSymbol.Type.Int), Tuple.Create<SrFunction,int>(Shift, 22)},
+            {Tuple.Create(15,StateSymbol.Type.L_Paren), Tuple.Create<SrFunction,int>(Shift, 24)},
+            {Tuple.Create(15,StateSymbol.Type.BOOL), Tuple.Create<SrFunction,int>(GotoState, 16)},
+            {Tuple.Create(15,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 19)},
+
+            //State 16
+            {Tuple.Create(16,StateSymbol.Type.Then), Tuple.Create<SrFunction,int>(Shift, 17)},
+
+            //State 17
+            {Tuple.Create(17,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 36)},
+            {Tuple.Create(17,StateSymbol.Type.Goto), Tuple.Create<SrFunction,int>(Shift, 13)},
+
+            {Tuple.Create(17,StateSymbol.Type.UCDST), Tuple.Create<SrFunction,int>(GotoState, 18)},
+			{Tuple.Create(17,StateSymbol.Type.ASSIGN), Tuple.Create<SrFunction,int>(GotoState, 29)},
+            {Tuple.Create(17,StateSymbol.Type.GOTO), Tuple.Create<SrFunction,int>(GotoState, 30)},
+
+            //State 18
+			//reduce
+			{Tuple.Create(18,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 11)},
+			{Tuple.Create(18,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 11)},
+
+			//State 19
+			//shift
+			{Tuple.Create(19,StateSymbol.Type.Rel), Tuple.Create<SrFunction,int>(Shift, 20)},
+
+			//State 20
+			//shift
+			{Tuple.Create(20,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 23)},
+			{Tuple.Create(20,StateSymbol.Type.Int), Tuple.Create<SrFunction,int>(Shift, 22)},
+			{Tuple.Create(20,StateSymbol.Type.L_Paren), Tuple.Create<SrFunction,int>(Shift, 24)},
+			//goto
+			{Tuple.Create(20,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 21)},
+
+			//State 21
+			//reduce
+			{Tuple.Create(21,StateSymbol.Type.Then), Tuple.Create<SrFunction,int>(Reduce, 12)},
 
             //State 22
             {Tuple.Create(22,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 13)},
@@ -156,25 +165,61 @@ class SrParser
             {Tuple.Create(27,StateSymbol.Type.R_Paren), Tuple.Create<SrFunction,int>(Shift, 28)},
 
             //State 28
-            {Tuple.Create(28,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 15)},
-            {Tuple.Create(28,StateSymbol.Type.Then), Tuple.Create<SrFunction,int>(Reduce, 15)},
-            {Tuple.Create(28,StateSymbol.Type.Rel), Tuple.Create<SrFunction,int>(Reduce, 15)},
-            {Tuple.Create(28,StateSymbol.Type.Op), Tuple.Create<SrFunction,int>(Reduce, 15)},
-            {Tuple.Create(28,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 15)},
-            {Tuple.Create(28,StateSymbol.Type.R_Paren), Tuple.Create<SrFunction,int>(Reduce, 15)},
+			//reduce
+			{Tuple.Create(28,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 15)},
+			{Tuple.Create(28,StateSymbol.Type.Then), Tuple.Create<SrFunction,int>(Reduce, 15)},
+			{Tuple.Create(28,StateSymbol.Type.Rel), Tuple.Create<SrFunction,int>(Reduce, 15)},
+			{Tuple.Create(28,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 15)},
+			{Tuple.Create(28,StateSymbol.Type.R_Paren), Tuple.Create<SrFunction,int>(Reduce, 15)},
+			{Tuple.Create(28,StateSymbol.Type.Op), Tuple.Create<SrFunction,int>(Reduce, 15)},
 
-            //State 31
-            {Tuple.Create(31,StateSymbol.Type.Assign), Tuple.Create<SrFunction,int>(Shift, 32)},
-            //{Tuple.Create(31,StateSymbol.Type.Colon), Tuple.Create<SrFunction,int>(Shift, 34)},
+			//State 29
+			//reduce
+			{Tuple.Create(29,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 16)},
+			{Tuple.Create(29,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 16)},
 
-            //State 32
-            {Tuple.Create(32,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 23)},
-            {Tuple.Create(32,StateSymbol.Type.Int), Tuple.Create<SrFunction,int>(Shift, 22)},
-            {Tuple.Create(32,StateSymbol.Type.L_Paren), Tuple.Create<SrFunction,int>(Shift, 24)},
-            {Tuple.Create(32,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 33)},
+			//State 30
+			//reduce
+			{Tuple.Create(30,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 17)},
+			{Tuple.Create(30,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 17)},
 
-            //State 33
-            {Tuple.Create(33,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 9)}
+			//State 31
+			//shift
+			{Tuple.Create(31,StateSymbol.Type.Assign), Tuple.Create<SrFunction,int>(Shift, 32)},
+			{Tuple.Create(31,StateSymbol.Type.Colon), Tuple.Create<SrFunction,int>(Shift, 34)},
+
+			//State 32
+			//shift
+			{Tuple.Create(32,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 23)},
+			{Tuple.Create(32,StateSymbol.Type.Int), Tuple.Create<SrFunction,int>(Shift, 22)},
+			{Tuple.Create(32,StateSymbol.Type.L_Paren), Tuple.Create<SrFunction,int>(Shift, 24)},
+			//goto
+			{Tuple.Create(32,StateSymbol.Type.EXP), Tuple.Create<SrFunction,int>(GotoState, 33)},
+
+			//State 33
+			//reduce
+			{Tuple.Create(33,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 9)},
+			{Tuple.Create(33,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 9)},
+
+			//State 34
+			//shift
+			{Tuple.Create(34,StateSymbol.Type.Id), Tuple.Create<SrFunction,int>(Shift, 36)},
+			{Tuple.Create(34,StateSymbol.Type.Goto), Tuple.Create<SrFunction,int>(Shift, 13)},
+			{Tuple.Create(34,StateSymbol.Type.If), Tuple.Create<SrFunction,int>(Shift, 15)},
+			//goto
+			{Tuple.Create(34,StateSymbol.Type.ULST), Tuple.Create<SrFunction,int>(GotoState, 35)},
+			{Tuple.Create(34,StateSymbol.Type.ASSIGN), Tuple.Create<SrFunction,int>(GotoState, 10)},
+			{Tuple.Create(34,StateSymbol.Type.GOTO), Tuple.Create<SrFunction,int>(GotoState, 11)},
+			{Tuple.Create(34,StateSymbol.Type.CD), Tuple.Create<SrFunction,int>(GotoState, 12)},
+
+			//State 35
+			//reduce
+			{Tuple.Create(35,StateSymbol.Type.End), Tuple.Create<SrFunction,int>(Reduce, 5)},
+			{Tuple.Create(35,StateSymbol.Type.Semicolon), Tuple.Create<SrFunction,int>(Reduce, 5)},
+
+			//State 36
+			//shift
+			{Tuple.Create(36,StateSymbol.Type.Assign), Tuple.Create<SrFunction,int>(Shift, 32)},
 		};
 	}
 
@@ -184,7 +229,7 @@ class SrParser
         keepParsing = false;
 	}
 
-	public void Compile(StreamReader input)
+	public void Compile(TextReader input)
 	{
         keepParsing = true;
         t = new Tokenizer(input);
@@ -218,7 +263,7 @@ class SrParser
 	{
 		switch (state)
 		{
-            //PROG -> BEGIN <STL> END
+            //PROG -> BEGIN <STL> END 
 			case 0:
 				Console.WriteLine("PROG-> BEGIN <STL> END");
 				if (symbolStack.Pop().type != StateSymbol.Type.End)
@@ -283,6 +328,19 @@ class SrParser
             //LST -> id : <ULST>
             case 5:
                 Console.WriteLine("LST -> id : <ULST>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.ULST )
+                    throw new SystemException("<ULST> not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.Colon)
+                    throw new SystemException(": not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.Id)
+                    throw new SystemException("Id not found");
+
+                PopStates(3);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.LST));
+
                 break;
             //ULST -> <ASSIGN>
             case 6:
@@ -297,10 +355,23 @@ class SrParser
             //ULST -> <GOTO>
             case 7:
                 Console.WriteLine("ULST -> <GOTO>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.GOTO)
+                    throw new SystemException("<GOTO> not found");
+
+                PopStates(1);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST));
                 break;
             //ULST -> <CD>
             case 8:
                 Console.WriteLine("ULST -> <CD>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.CD)
+                    throw new SystemException("<CD> not found");
+
+                PopStates(1);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST));
+
                 break;
             //ASSIGN -> id _ <EXP>
             case 9:
@@ -322,14 +393,50 @@ class SrParser
             //GOTO -> GOTO id
             case 10:
                 Console.WriteLine("GOTO -> GOTO id");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.Id)
+                    throw new SystemException("id not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.Goto)
+                    throw new SystemException("GOTO not found");
+
+                PopStates(2);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.GOTO));
                 break;
             //CD -> IF <BOOL> THEN <UCDST>
             case 11:
                 Console.WriteLine("CD -> IF <BOOL> THEN <UCDST>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.UCDST)
+                    throw new SystemException("<UCDST> not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.Then)
+                    throw new SystemException("THEN not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.BOOL)
+                    throw new SystemException("<BOOL> not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.If)
+                    throw new SystemException("IF not found");
+
+                PopStates(4);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.CD));
                 break;
             //BOOL -> <EXP> Rel <EXP>
             case 12:
                 Console.WriteLine("BOOL -> <EXP> Rel <EXP>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.EXP)
+                    throw new SystemException("<EXP> not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.Rel)
+                    throw new SystemException("Rel not found");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.EXP)
+                    throw new SystemException("<EXP> not found");
+
+                PopStates(3);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.BOOL));
                 break;
             //EXP -> int
             case 13:
@@ -377,10 +484,24 @@ class SrParser
             //UCDST -> <ASSIGN>
             case 16:
                 Console.WriteLine("UCDST -> <ASSIGN>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.ASSIGN)
+                    throw new SystemException("<ASSIGN> not found");
+			
+				PopStates(1);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.UCDST));
+
                 break;
             //UCDST -> <GOTO>
             case 17:
                 Console.WriteLine("UCDST -> <GOTO>");
+
+                if (symbolStack.Pop().type != StateSymbol.Type.GOTO)
+                    throw new SystemException("<UCDST> not found");
+			
+				PopStates(1);
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.UCDST));
+
                 break;
             default:
                 throw new SystemException("Reduce what?");
@@ -410,8 +531,8 @@ class SrParser
 
     public static void Main()
     {
-        //Console.Write("Enter Path to Tokenize:");
-        string path = "/storage/dev/Compilers/Final-Project/Source/test1.txt";//Console.ReadLine();
+        Console.Write("Enter Path to Tokenize:");
+        string path = Console.ReadLine();
         SrParser sp = new SrParser();
 		
 		try {
