@@ -5,35 +5,49 @@ class OpNode: IAstNode
 {
     private IAstNode _left;
     private IAstNode _right;
-    private StateSymbol op;
-    const string TMP_LOC = 
+    private string op;
 
-    public OpNode(IAstNode left, StateSymbol op, IAstNode right)
+    public OpNode(IAstNode left, string op, IAstNode right)
     {
         _left = left;
         this.op = op;
         _right = right;
     }
 
-
-
     public void CodeGenCalvin(CodeGenerator cg)
     {
-        leftAddr = Left.CodeGenCalvin(cg);
-        cg.WriteLine("store left");
-        rightAddr = Right.CodeGenCalvin(cg);
+        
+        Right.CodeGenCalvin(cg);
+        cg.WriteLine("STORE " + cg.NewAcc());
+        Left.CodeGenCalvin(cg);
 
-        cg.WriteLine("add right");
+        switch (op)
+        {
+            case "+":
+                cg.WriteLine("add right");
+                break;
+            case "-":
+                cg.WriteLine("sub right");
+                break;
+            case "*":
+                cg.WriteLine("mul right");
+                break;
+            case "/":
+                cg.WriteLine("div right");
+                break;
+        }
+
+        cg.FreeAcc();
     }
 
-    IAstNode Left
+    public IAstNode Left
     {
         get
         {
             return _left;
         }
     }
-    IAstNode Right
+    public IAstNode Right
     {
         get
         {

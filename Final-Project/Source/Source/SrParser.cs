@@ -9,13 +9,14 @@ class SrParser
 	private Stack<StateSymbol> symbolStack;
     private Stack<int> stateStack;
 	Tokenizer t;
-	//CodeGenerator cg;
+	CodeGenerator cg;
     private bool keepParsing = false;
 
 	public SrParser()
 	{
         symbolStack = new Stack<StateSymbol>();
         stateStack = new Stack<int>();
+        cg = new CodeGenerator();
 
 		srTable = new Dictionary<Tuple<int, StateSymbol.Type>, Tuple<SrFunction, int>>()
 		{
@@ -249,6 +250,9 @@ class SrParser
             }
         }
 
+        symbolStack.Peek().astNode.CodeGenCalvin(cg);
+        cg.OutputTest();
+
 	}
 
     private void PopStates(int count)
@@ -269,61 +273,71 @@ class SrParser
 				if (symbolStack.Pop().type != StateSymbol.Type.End)
 					throw new SystemException("END not found");
 
-				if (symbolStack.Pop().type != StateSymbol.Type.STL)
+				if (symbolStack.Peek().type != StateSymbol.Type.STL)
 					throw new SystemException("<STL> not found");
+
+                IAstNode stlAst = symbolStack.Pop().astNode;
 
 				if (symbolStack.Pop().type != StateSymbol.Type.Begin)
 					throw new SystemException("<Begin> not found");
 			
 				PopStates(3);
-				symbolStack.Push(new StateSymbol(StateSymbol.Type.PROG));
+				symbolStack.Push(new StateSymbol(StateSymbol.Type.PROG,stlAst ));
 				break;
 			//STL -> <ST>
 			case 1:
 				Console.WriteLine("STL -> <ST>");
 
-				if (symbolStack.Pop().type != StateSymbol.Type.ST)
+				if (symbolStack.Peek().type != StateSymbol.Type.ST)
 					throw new SystemException("<ST> not found");
 			
 				PopStates(1);
-				symbolStack.Push(new StateSymbol(StateSymbol.Type.STL));
+				symbolStack.Push(new StateSymbol(StateSymbol.Type.STL, symbolStack.Pop().astNode));
 				break;
 			//STL -> <STL> ; <ST>
 			case 2:
+                IAstNode leftNode = null;
+                IAstNode rightNode = null;
+
 				Console.WriteLine("STL -> <STL> ; <ST>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.ST)
+                if (symbolStack.Peek().type != StateSymbol.Type.ST)
                     throw new SystemException("<ST> not found");
+
+                rightNode = symbolStack.Pop().astNode;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Semicolon)
                     throw new SystemException("; not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.STL)
+                if (symbolStack.Peek().type != StateSymbol.Type.STL)
                     throw new SystemException("<STL> not found");
+
+                leftNode = symbolStack.Pop().astNode;
 			
 				PopStates (3);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.STL));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.STL, 
+                                 new StlNode(leftNode, rightNode)));
                 
                break;
             //ST -> LST
             case 3:
                 Console.WriteLine("ST -> LST");
 
-                if(symbolStack.Pop().type != StateSymbol.Type.LST)
+                if(symbolStack.Peek().type != StateSymbol.Type.LST)
                     throw new SystemException("<LST> not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.ST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ST, symbolStack.Pop().astNode));
                 break;
             //ST -> ULST
             case 4:
                 Console.WriteLine("ST -> ULST");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.ULST)
+                if (symbolStack.Peek().type != StateSymbol.Type.ULST)
                     throw new SystemException("<ULST> not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.ST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ST, symbolStack.Pop().astNode));
                 break;
             //LST -> id : <ULST>
             case 5:
@@ -339,55 +353,60 @@ class SrParser
                     throw new SystemException("Id not found");
 
                 PopStates(3);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.LST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.LST, (IAstNode)null));
 
                 break;
             //ULST -> <ASSIGN>
             case 6:
                 Console.WriteLine("ULST -> <ASSIGN>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.ASSIGN)
+                if (symbolStack.Peek().type != StateSymbol.Type.ASSIGN)
                     throw new SystemException("<ASSIGN> not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST, symbolStack.Pop().astNode));
                 break;
             //ULST -> <GOTO>
             case 7:
                 Console.WriteLine("ULST -> <GOTO>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.GOTO)
+                if (symbolStack.Peek().type != StateSymbol.Type.GOTO)
                     throw new SystemException("<GOTO> not found");
 
                 PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST, symbolStack.Pop().astNode));
                 break;
             //ULST -> <CD>
             case 8:
                 Console.WriteLine("ULST -> <CD>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.CD)
+                if (symbolStack.Peek().type != StateSymbol.Type.CD)
                     throw new SystemException("<CD> not found");
 
                 PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ULST, symbolStack.Pop().astNode));
 
                 break;
             //ASSIGN -> id _ <EXP>
             case 9:
                 Console.WriteLine("ASSIGN -> id _ <EXP>");
 
-                if(symbolStack.Pop().type != StateSymbol.Type.EXP)
+                if(symbolStack.Peek().type != StateSymbol.Type.EXP)
                     throw new SystemException("<EXP> not found");
+
+                IAstNode astNode = symbolStack.Pop().astNode;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Assign)
                     throw new SystemException("Assign not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Id)
+                if (symbolStack.Peek().type != StateSymbol.Type.Id)
                     throw new SystemException("Id not found");
+
+                string id = symbolStack.Pop().value;
 			
 				PopStates(3);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.ASSIGN));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.ASSIGN,
+                                 new AssignNode(id, astNode)));
 
                 break;
             //GOTO -> GOTO id
@@ -401,7 +420,7 @@ class SrParser
                     throw new SystemException("GOTO not found");
 
                 PopStates(2);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.GOTO));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.GOTO, (IAstNode)null));
                 break;
             //CD -> IF <BOOL> THEN <UCDST>
             case 11:
@@ -420,7 +439,7 @@ class SrParser
                     throw new SystemException("IF not found");
 
                 PopStates(4);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.CD));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.CD, (IAstNode)null));
                 break;
             //BOOL -> <EXP> Rel <EXP>
             case 12:
@@ -436,71 +455,81 @@ class SrParser
                     throw new SystemException("<EXP> not found");
 
                 PopStates(3);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.BOOL));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.BOOL, (IAstNode)null));
                 break;
             //EXP -> int
             case 13:
                 Console.WriteLine("EXP -> int");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Int)
+                if (symbolStack.Peek().type != StateSymbol.Type.Int)
                     throw new SystemException("Int not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP,new LoadNode(symbolStack.Pop())));
                 break;
             //EXP -> id
             case 14:
                 Console.WriteLine("EXP -> id");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Id)
+                if (symbolStack.Peek().type != StateSymbol.Type.Id)
                     throw new SystemException("Id not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP, new LoadNode(symbolStack.Pop())));
                 break;
             //EXP -> ( <EXP> op <EXP> )
             case 15:
+                IAstNode leftExp = null;
+                IAstNode rightExp = null;
+                string op;
+
                 Console.WriteLine("EXP -> ( <EXP> op <EXP> )");
 
                 if (symbolStack.Pop().type != StateSymbol.Type.R_Paren)
                     throw new SystemException(") not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.EXP)
+                if (symbolStack.Peek().type != StateSymbol.Type.EXP)
                     throw new SystemException("<EXP> not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Op)
+                rightExp = symbolStack.Pop().astNode;
+
+                if (symbolStack.Peek().type != StateSymbol.Type.Op)
                     throw new SystemException("Op not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.EXP)
+                op = symbolStack.Pop().value;
+
+                if (symbolStack.Peek().type != StateSymbol.Type.EXP)
                     throw new SystemException("<EXP> not found");
+
+                leftExp = symbolStack.Pop().astNode;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.L_Paren)
                     throw new SystemException("( not found");
 			
 				PopStates(5);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.EXP, new OpNode(leftExp, op, rightExp)));
 
                 break;
             //UCDST -> <ASSIGN>
             case 16:
                 Console.WriteLine("UCDST -> <ASSIGN>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.ASSIGN)
+                if (symbolStack.Peek().type != StateSymbol.Type.ASSIGN)
                     throw new SystemException("<ASSIGN> not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.UCDST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.UCDST, symbolStack.Pop().astNode));
 
                 break;
             //UCDST -> <GOTO>
             case 17:
                 Console.WriteLine("UCDST -> <GOTO>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.GOTO)
+                if (symbolStack.Peek().type != StateSymbol.Type.GOTO)
                     throw new SystemException("<UCDST> not found");
 			
 				PopStates(1);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.UCDST));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.UCDST, symbolStack.Pop().astNode));
 
                 break;
             default:
