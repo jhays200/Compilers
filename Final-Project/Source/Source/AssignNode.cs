@@ -15,7 +15,7 @@ class AssignNode: IAstNode
     {
         node.CodeGenCalvin(cg);
 
-        cg.WriteLine("store " + id);
+        cg.WriteLine("STORE " + cg.GetIdAddrStr(id));
     }
 
     public IAstNode Left 

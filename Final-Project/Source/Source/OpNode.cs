@@ -18,26 +18,35 @@ class OpNode: IAstNode
     {
         
         Right.CodeGenCalvin(cg);
-        cg.WriteLine("STORE " + cg.NewAcc());
+        cg.WriteLine("STORE " + cg.NewAccu());
         Left.CodeGenCalvin(cg);
 
         switch (op)
         {
             case "+":
-                cg.WriteLine("add right");
+                cg.WriteLine("ADD " + cg.GetAccu());
                 break;
             case "-":
-                cg.WriteLine("sub right");
+                cg.WriteLine("SUB " + cg.GetAccu());
                 break;
             case "*":
-                cg.WriteLine("mul right");
+                cg.WriteLine("MUL " + cg.GetAccu());
                 break;
             case "/":
-                cg.WriteLine("div right");
+                cg.WriteLine("DIV " + cg.GetAccu());
+                break;
+            case "=":
+                cg.WriteLine("EQ " + cg.GetAccu());
+                break;
+            case ">":
+                cg.WriteLine("GR " + cg.GetAccu());
+                break;
+            case "<":
+                cg.WriteLine("LESS " + cg.GetAccu());
                 break;
         }
 
-        cg.FreeAcc();
+        cg.FreeAccu();
     }
 
     public IAstNode Left

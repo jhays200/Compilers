@@ -43,13 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssignNode.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="IAstNode.cs" />
+    <Compile Include="IfNode.cs" />
+    <Compile Include="LabelNode.cs" />
     <Compile Include="LoadNode.cs" />
     <Compile Include="OpNode.cs" />
     <Compile Include="SrParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateSymbol.cs" />
+    <Compile Include="StlNode.cs" />
     <Compile Include="Tokenizer.cs" />
   </ItemGroup>
   <ItemGroup>

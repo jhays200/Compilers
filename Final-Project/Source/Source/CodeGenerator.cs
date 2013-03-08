@@ -7,17 +7,16 @@ class CodeGenerator
 {
     StringBuilder sb = new StringBuilder();
 
-    const int ID_START = 0;
-    const int CONST_START = 0;
-    const int CODE_START = 0;
-
-    string currentAccumulator;
+    const int ID_START = 1000;
+    const int CONST_START = 100;
+    const int CODE_START = 3000;
 
     int id_loc;
     int const_loc;
-    int code_loc;
-    int label_placeholder;
+    public int code_loc{get; private set;}
     int current_accu;
+    public int around_label { get; private set; }
+    int placeHolderNumber;
 
     Dictionary<string, int> idTable;
     Dictionary<string, int> labelTable;
@@ -30,6 +29,13 @@ class CodeGenerator
         const_loc = CONST_START;
         code_loc = CODE_START;
         current_accu = 0;
+        around_label = 0;
+        placeHolderNumber = 0;
+
+        idTable = new Dictionary<string, int>();
+        labelTable = new Dictionary<string, int>();
+        constTable = new Dictionary<int, int>();
+        physicalLabelLocation = new Dictionary<int, int>();
     }
 
     public void WriteLine(string line)
@@ -41,8 +47,22 @@ class CodeGenerator
     public void OutputTest()
     {
 
-        Console.WriteLine("Assembly Output");
+        Console.WriteLine("\nAssembly Output");
         Console.WriteLine(sb.ToString());
+
+        Console.WriteLine("\nSymbol Table");
+        Console.WriteLine("Address\tId");
+        foreach (KeyValuePair<string, int> symbol in idTable)
+        {
+            Console.WriteLine("{0}\t{1}", symbol.Value, symbol.Key);
+        }
+
+        Console.WriteLine("\nConst Table");
+        Console.WriteLine("Address\tValue");
+        foreach (KeyValuePair<int, int> symbol in constTable)
+        {
+            Console.WriteLine("{0}\t{1}", symbol.Value, symbol.Key);
+        }
     }
 
     public string GetIdAddrStr(string id)
@@ -59,14 +79,11 @@ class CodeGenerator
         return idTable[id].ToString();
     }
 
-    public string GetLabelAddrStr(string label)
+    public string GetLabelPlaceholder(string label)
     {
-        if (idTable.ContainsKey(label))
-            return String.Empty;
-
         if (!labelTable.ContainsKey(label))
         {
-            labelTable[label] = 0;
+            labelTable[label] = placeHolderNumber++;
         }
 
         return labelTable[label].ToString();
@@ -85,9 +102,9 @@ class CodeGenerator
         return constTable[value].ToString();
     }
 
-    public void SetPhysicalLabelLocation(int label)
+    public void SetPhysicalLabelLocation(int placeHolder)
     {
-        physicalLabelLocation[label] = code_loc;
+        physicalLabelLocation[placeHolder] = code_loc;
     }
 
     public string NewAccu()
@@ -99,6 +116,17 @@ class CodeGenerator
     public void FreeAccu()
     {
         --current_accu;
+    }
+
+    public string GetAccu()
+    {
+        return idTable[current_accu.ToString()].ToString();
+    }
+
+    public int NewAroundLabel()
+    {
+        ++around_label;
+        return Int32.Parse(GetLabelPlaceholder(around_label.ToString()));
     }
 
 

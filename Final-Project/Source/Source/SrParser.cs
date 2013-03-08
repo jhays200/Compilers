@@ -265,6 +265,10 @@ class SrParser
 
 	private void Reduce(int state)
 	{
+        IAstNode leftNode = null;
+        IAstNode rightNode = null;
+        string op;
+
 		switch (state)
 		{
             //PROG -> BEGIN <STL> END 
@@ -278,11 +282,14 @@ class SrParser
 
                 IAstNode stlAst = symbolStack.Pop().astNode;
 
+                if (stlAst.Right != null)
+                    stlAst = new StlNode(stlAst, (IAstNode)null);
+
 				if (symbolStack.Pop().type != StateSymbol.Type.Begin)
 					throw new SystemException("<Begin> not found");
 			
 				PopStates(3);
-				symbolStack.Push(new StateSymbol(StateSymbol.Type.PROG,stlAst ));
+				symbolStack.Push(new StateSymbol(StateSymbol.Type.PROG,stlAst));
 				break;
 			//STL -> <ST>
 			case 1:
@@ -292,13 +299,10 @@ class SrParser
 					throw new SystemException("<ST> not found");
 			
 				PopStates(1);
-				symbolStack.Push(new StateSymbol(StateSymbol.Type.STL, symbolStack.Pop().astNode));
+				symbolStack.Push(new StateSymbol(StateSymbol.Type.STL, new StlNode(symbolStack.Pop().astNode, null)));
 				break;
 			//STL -> <STL> ; <ST>
 			case 2:
-                IAstNode leftNode = null;
-                IAstNode rightNode = null;
-
 				Console.WriteLine("STL -> <STL> ; <ST>");
 
                 if (symbolStack.Peek().type != StateSymbol.Type.ST)
@@ -313,11 +317,13 @@ class SrParser
                     throw new SystemException("<STL> not found");
 
                 leftNode = symbolStack.Pop().astNode;
-			
-				PopStates (3);
+		
+                if (leftNode.Right == null)
+                    leftNode = leftNode.Left;
+
+                PopStates (3);
                 symbolStack.Push(new StateSymbol(StateSymbol.Type.STL, 
                                  new StlNode(leftNode, rightNode)));
-                
                break;
             //ST -> LST
             case 3:
@@ -424,38 +430,51 @@ class SrParser
                 break;
             //CD -> IF <BOOL> THEN <UCDST>
             case 11:
+                IAstNode rel = null;
+                IAstNode ucdst = null;
                 Console.WriteLine("CD -> IF <BOOL> THEN <UCDST>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.UCDST)
+                if (symbolStack.Peek().type != StateSymbol.Type.UCDST)
                     throw new SystemException("<UCDST> not found");
+
+                ucdst = symbolStack.Pop().astNode;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Then)
                     throw new SystemException("THEN not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.BOOL)
+                if (symbolStack.Peek().type != StateSymbol.Type.BOOL)
                     throw new SystemException("<BOOL> not found");
+
+                rel = symbolStack.Pop().astNode;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.If)
                     throw new SystemException("IF not found");
 
                 PopStates(4);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.CD, (IAstNode)null));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.CD, new IfNode(rel, ucdst)));
                 break;
             //BOOL -> <EXP> Rel <EXP>
             case 12:
                 Console.WriteLine("BOOL -> <EXP> Rel <EXP>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.EXP)
+                if (symbolStack.Peek().type != StateSymbol.Type.EXP)
                     throw new SystemException("<EXP> not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Rel)
+                rightNode = symbolStack.Pop().astNode;
+
+                if (symbolStack.Peek().type != StateSymbol.Type.Rel)
                     throw new SystemException("Rel not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.EXP)
+                op = symbolStack.Pop().value;
+
+                if (symbolStack.Peek().type != StateSymbol.Type.EXP)
                     throw new SystemException("<EXP> not found");
 
+                leftNode = symbolStack.Pop().astNode;
+
                 PopStates(3);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.BOOL, (IAstNode)null));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.BOOL, new OpNode(leftNode, op, rightNode)));
+                
                 break;
             //EXP -> int
             case 13:
@@ -481,7 +500,6 @@ class SrParser
             case 15:
                 IAstNode leftExp = null;
                 IAstNode rightExp = null;
-                string op;
 
                 Console.WriteLine("EXP -> ( <EXP> op <EXP> )");
 

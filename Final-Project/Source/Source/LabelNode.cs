@@ -1,12 +1,11 @@
 ﻿using System;
 
-
-class StlNode:IAstNode
+class LabelNode: IAstNode
 {
     IAstNode _left;
     IAstNode _right;
 
-    public StlNode(IAstNode left, IAstNode right)
+    public LabelNode(IAstNode left, IAstNode right)
     {
         _left = left;
         _right = right;

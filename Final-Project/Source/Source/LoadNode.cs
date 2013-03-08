@@ -28,7 +28,7 @@ class LoadNode: IAstNode
             address = cg.GetConstAddrStr(_token.value);
         }
 
-        cg.WriteLine("load " + address);
+        cg.WriteLine("LOAD " + address);
     }
 
     public IAstNode Left
