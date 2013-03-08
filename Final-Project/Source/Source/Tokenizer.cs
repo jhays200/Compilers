@@ -23,39 +23,13 @@ class Tokenizer
 	//regex for different stuff
 	Regex numberRx;
 	Regex validBufferRx;
-	//Regex validCharRx;
-
-    //static void Main()
-    //{
-    //    Console.Write("Enter Path to Tokenize:");
-    //    string path = Console.ReadLine();
-    //    using (StreamReader sr = new StreamReader(path))
-    //    {
-    //        try
-    //        {
-    //            Tokenizer t = new Tokenizer(sr);
-
-    //            while (t.currentSymbol.type != StateSymbol.Type.Eof)
-    //            {
-    //                Console.WriteLine("Type {0}\tValue {1}", t.currentSymbol.type.GetType(), t.currentSymbol.value);
-    //                t.GetNextSymbol();
-    //            }
-    //        }
-    //        catch (System.Exception exp)
-    //        {
-    //            Console.WriteLine(exp.Message);
-    //            Console.Write(exp.StackTrace);
-    //        }
-    //    }
-    //    Console.ReadLine();
-    //}
 
     public Tokenizer(TextReader input)
     {
         inputStream = input;
         tokenQueue = new Queue<StateSymbol>(QUEUE_LENGTH);
         lineNumber = 1;
-        colNumber = 1;
+        colNumber = 0;
 		buffer = String.Empty;
 
 		tokenTable = new Dictionary<string, StateSymbol>()
@@ -83,7 +57,7 @@ class Tokenizer
 		validBufferRx = new Regex(@"^([a-zA-Z][a-zA-Z0-9]*|[0-9]+)?$", RegexOptions.Compiled);
 		//validCharRx = new Regex(@"[a-zA-Z0-9_()+-*/=><;:]", RegexOptions.Compiled);
 		
-		currentLine = input.ReadLine();
+		//currentLine = input.ReadLine();
 		BufferTokens();
 		GetNextSymbol();
     }
@@ -101,42 +75,22 @@ class Tokenizer
 
     void BufferTokens()
     {
-        while(tokenQueue.Count < QUEUE_LENGTH - 2)
+        currentLine = inputStream.ReadLine();
+        //We have reached the end of file
+        if (currentLine == null)
         {
-            //We have reached the end of file
-            if (currentLine == null)
-            {
-				ClearSymbolBuffer();
-                tokenQueue.Enqueue(new StateSymbol(StateSymbol.Type.Eof, "$"));
-                currentSymbol = new StateSymbol(StateSymbol.Type.Eof, "$");
-                return;
-            }
-            //Make sure we have data for the line
-            if (colNumber >= currentLine.Length)
-            {
-				ClearSymbolBuffer();
-                currentLine = inputStream.ReadLine();
-
-				//eof
-				if (currentLine == null)
-				{
-					tokenQueue.Enqueue(new StateSymbol(StateSymbol.Type.Eof, "$"));
-					return;
-				}
-				else
-				{
-					ProcessLetter(' ');
-					lineNumber++;
-					colNumber = 1;
-				}
-            }
-
-             //now go character by character
-			for (; colNumber <= currentLine.Length && tokenQueue.Count < QUEUE_LENGTH - 2; ++colNumber)
-            {
-				ProcessLetter(currentLine[colNumber-1]);
-            }
+			ClearSymbolBuffer();
+            tokenQueue.Enqueue(new StateSymbol(StateSymbol.Type.Eof, "$"));
+            currentSymbol = new StateSymbol(StateSymbol.Type.Eof, "$");
+            return;
         }
+
+        //now go character by character
+        for (colNumber = 0; colNumber < currentLine.Length; ++colNumber)
+        {
+            ProcessLetter(currentLine[colNumber]);
+        }
+        ProcessLetter(' ');
 
     }
 

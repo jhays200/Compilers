@@ -1,7 +1,7 @@
 BEGIN
 S _ 0;
 I _ 1;
-IF I>36 THEN I_4;
+IF I>36 THEN I_(4+5);
 S _ (S+(I*I));
-I _ (I+1)
+I _ 1
 END
