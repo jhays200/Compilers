@@ -79,14 +79,17 @@ class CodeGenerator
         return idTable[id].ToString();
     }
 
-    public string GetLabelPlaceholder(string label)
+    public void AddLabelPlaceHolder(string label)
     {
-        if (!labelTable.ContainsKey(label))
-        {
-            labelTable[label] = placeHolderNumber++;
-        }
+        if (labelTable.ContainsKey(label))
+            throw new SystemException("Label: " + label + "is defined twice");
 
-        return labelTable[label].ToString();
+        labelTable.Add(label, placeHolderNumber++);
+    }
+
+    public int GetLabelPlaceHolder(string label)
+    {
+        return labelTable[label]);
     }
 
     public string GetConstAddrStr(string intValue)
