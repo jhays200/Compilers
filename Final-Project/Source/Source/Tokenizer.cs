@@ -114,6 +114,7 @@ class Tokenizer
             //Make sure we have data for the line
             if (colNumber >= currentLine.Length)
             {
+				ClearSymbolBuffer();
                 currentLine = inputStream.ReadLine();
 
 				//eof
