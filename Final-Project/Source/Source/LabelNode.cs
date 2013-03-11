@@ -2,37 +2,33 @@
 
 class LabelNode: IAstNode
 {
-    IAstNode _left;
-    IAstNode _right;
+    int _labelPlaceholder;
+    IAstNode _ulst;
 
-    public LabelNode(IAstNode left, IAstNode right)
+    public LabelNode(int labelPlaceholder, IAstNode ulst)
     {
-        _left = left;
-        _right = right;
+        _labelPlaceholder = labelPlaceholder;
+        _ulst = ulst;
     }
 
     public void CodeGenCalvin(CodeGenerator cg)
     {
-        Left.CodeGenCalvin(cg);
-
-        if (Right != null)
-            Right.CodeGenCalvin(cg);
-        else
-            cg.WriteLine("HALT");
+        cg.SetPhysicalLabelLocation(_labelPlaceholder);
+		_ulst.CodeGenCalvin(cg);
     }
 
     public IAstNode Left 
     {
         get
         {
-            return _left;
+            return null;
         }
     }
     public IAstNode Right
     {
         get
         {
-            return _right;
+            return _ulst;
         }
     }
 }

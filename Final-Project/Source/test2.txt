@@ -5,5 +5,5 @@ LOOP: IF I>36 THEN GOTO AROUND;
 S _ (S+(I*I));
 I _ (I+1);
 GOTO LOOP;
-AROUND:S_(2*S)
+S:S_(2*S)
 END

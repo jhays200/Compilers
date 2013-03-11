@@ -349,17 +349,21 @@ class SrParser
             case 5:
                 Console.WriteLine("LST -> id : <ULST>");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.ULST )
+                if (symbolStack.Peek().type != StateSymbol.Type.ULST )
                     throw new SystemException("<ULST> not found");
+				
+				leftNode = symbolStack.Pop().astNode;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Colon)
                     throw new SystemException(": not found");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Id)
+                if (symbolStack.Peek().type != StateSymbol.Type.Id)
                     throw new SystemException("Id not found");
+			
+				int placeHolder = cg.AddLabelPlaceHolder(symbolStack.Pop().value);
 
                 PopStates(3);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.LST, (IAstNode)null));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.LST, new LabelNode(placeHolder, leftNode)));
 
                 break;
             //ULST -> <ASSIGN>
@@ -419,14 +423,16 @@ class SrParser
             case 10:
                 Console.WriteLine("GOTO -> GOTO id");
 
-                if (symbolStack.Pop().type != StateSymbol.Type.Id)
+                if (symbolStack.Peek().type != StateSymbol.Type.Id)
                     throw new SystemException("id not found");
+			
+				op = symbolStack.Pop().value;
 
                 if (symbolStack.Pop().type != StateSymbol.Type.Goto)
                     throw new SystemException("GOTO not found");
 
                 PopStates(2);
-                symbolStack.Push(new StateSymbol(StateSymbol.Type.GOTO, (IAstNode)null));
+                symbolStack.Push(new StateSymbol(StateSymbol.Type.GOTO, new GotoNode(op)));
                 break;
             //CD -> IF <BOOL> THEN <UCDST>
             case 11:
@@ -578,8 +584,8 @@ class SrParser
 
     public static void Main()
     {
-        Console.Write("Enter Path to Tokenize:");
-        string path = Console.ReadLine();
+        //Console.Write("Enter Path to Tokenize:");
+        string path = "/storage/dev/Compilers/Final-Project/Source/test2.txt"; //Console.ReadLine();
         SrParser sp = new SrParser();
 		
 		try {
