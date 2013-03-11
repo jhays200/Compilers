@@ -101,14 +101,18 @@ class CodeGenerator
 
     public string GetIdAddrStr(string id)
     {
-        if (labelTable.ContainsKey(id))
-            return String.Empty;
-
-        if (!idTable.ContainsKey(id))
-        {
-            id_loc++;
-            idTable[id] = id_loc;
-        }
+		int tmp = 0;
+		
+		if(!Int32.TryParse(id, out tmp)
+		   && labelTable.ContainsKey(id))
+		{
+			throw new SystemException("id " + id + " is already defined as a label");
+		}
+		
+		if(!idTable.ContainsKey(id))
+		{
+			idTable[id] = id_loc++;
+		}
 
         return idTable[id].ToString();
     }
@@ -117,6 +121,8 @@ class CodeGenerator
     {
         if (labelTable.ContainsKey(label))
             throw new SystemException("Label " + label + "is defined twice");
+		if(idTable.ContainsKey(label))
+			throw new SystemException("Label " + label + " can not be used as an id and a label");
 
         labelTable.Add(label, placeHolderNumber++);
 		return labelTable[label];
@@ -149,7 +155,7 @@ class CodeGenerator
 
     public string NewAccu()
     {
-        ++current_accu;
+		++current_accu;
         return GetIdAddrStr(current_accu.ToString());
     }
 
@@ -166,7 +172,7 @@ class CodeGenerator
     public int NewAroundLabel()
     {
         ++around_label;
-		AddLabelPlaceHolder(around_label.ToString());
+		labelTable.Add (around_label.ToString(), placeHolderNumber++);
         return labelTable[around_label.ToString()];
     }
 }
