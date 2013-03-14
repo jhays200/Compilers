@@ -8,9 +8,9 @@ class CodeGenerator
 {
     StringBuilder sb = new StringBuilder();
 
-    const int ID_START = 1000;
-    const int CONST_START = 100;
-    const int CODE_START = 3000;
+    const int ID_START = 2000;
+    const int CONST_START = 99;
+    const int CODE_START = 1000;
 
     int id_loc;
     int const_loc;
@@ -89,10 +89,10 @@ class CodeGenerator
 		{
 			Console.WriteLine("LABEL\t\t{0}\t\t{1}", i.Value, i.Key);
 		}
-		
 
-        Console.WriteLine("\nConst Table");
-        Console.WriteLine("Address\tValue");
+        Console.WriteLine();
+        Console.WriteLine("Const Table");
+        Console.WriteLine("Address\t\tValue");
         foreach (KeyValuePair<int, int> symbol in constTable)
         {
             Console.WriteLine("{0}\t\t{1}", symbol.Value, symbol.Key);
