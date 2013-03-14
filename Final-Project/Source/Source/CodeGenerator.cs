@@ -120,7 +120,7 @@ class CodeGenerator
     public int AddLabelPlaceHolder(string label)
     {
         if (labelTable.ContainsKey(label))
-            throw new SystemException("Label " + label + "is defined twice");
+            throw new SystemException("Label " + label + " is defined twice");
 		if(idTable.ContainsKey(label))
 			throw new SystemException("Label " + label + " can not be used as an id and a label");
 

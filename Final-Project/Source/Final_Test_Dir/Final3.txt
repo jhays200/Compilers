@@ -1,0 +1,9 @@
+BEGIN
+X _ 6;
+IF X < 10 THEN GOTO Test;
+IF X > 4 THEN GOTO Test;
+S_5;
+I_0;
+I _ ((S - 5) / (3 * (4 + S)));
+Test: IF I > 12 THEN S _ 5
+END

@@ -226,7 +226,7 @@ class SrParser
 
 	private void Accept(int state)
 	{
-        Console.WriteLine("Winning");
+        Console.WriteLine();
         keepParsing = false;
 	}
 
@@ -241,8 +241,30 @@ class SrParser
             Tuple<int, StateSymbol.Type> lookup = Tuple.Create(stateStack.Peek(), t.currentSymbol.type);
             if (!srTable.ContainsKey(lookup))
             {
+                string error = "Didn't parse table completely";
+                StateSymbol.Type lookAhead;
                 keepParsing = false;
-                Console.WriteLine("Didn't parse table completely");
+
+                switch (stateStack.Peek())
+                {
+                    case 0:
+                        error = "Program does not start with BEGIN";
+                        break;
+                    case 2:
+                        lookAhead = t.GetNextSymbol().type;
+
+                        if (lookAhead == StateSymbol.Type.Assign)
+                            error = "Left hand side of assignment is a number";
+                        else if (lookAhead == StateSymbol.Type.Colon)
+                            error = "Left hand side of colon is a number";
+                        break;
+                    case 13:
+                        error = "Goto <number> is an illegal operation";
+                        break;
+
+                }
+
+                throw new SystemException(error);
             }
             else
             {
@@ -582,24 +604,41 @@ class SrParser
         stateStack.Push(state);
     }
 
-    public static void Main()
+    public static void Main(String[] args)
     {
-        //Console.Write("Enter Path to Tokenize:");
-        string path = "/storage/dev/Compilers/Final-Project/Source/test2.txt"; //Console.ReadLine();
-        SrParser sp = new SrParser();
-		
-		try {
-			using(StreamReader sr = new StreamReader(path))
-			{
-	        	sp.Compile(new StreamReader(path));
-			}
-		}
-		catch(SystemException se)
-		{
-			Console.WriteLine ("Fatal Error: " + se.Message);
-		}
-		
-        Console.ReadLine();
+        bool argsNotPassed = args.Length == 0;
+        string[] testFiles;
+
+        if (argsNotPassed)
+        {
+            Console.Write("Enter Test Files Directory Path:");
+            testFiles = Directory.GetFiles(Console.ReadLine());
+        }
+        else
+        {
+            testFiles = Directory.GetFiles(args[0]);
+        }
+
+        foreach (string file in testFiles)
+        {
+            Console.WriteLine("\n" + Path.GetFileName(file));
+            try
+            {
+                SrParser sp = new SrParser();
+
+                using (StreamReader sr = new StreamReader(file))
+                {
+                    sp.Compile(new StreamReader(file));
+                }
+            }
+            catch (SystemException se)
+            {
+                Console.WriteLine("Fatal Error: " + se.Message);
+            }
+            if (argsNotPassed)
+                Console.ReadLine();
+            Console.WriteLine();
+        }
     }
 
 

@@ -1,0 +1,4 @@
+BEGIN
+S _ 5;
+S: X _ 10
+END

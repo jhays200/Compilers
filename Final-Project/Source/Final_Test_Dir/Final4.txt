@@ -1,0 +1,4 @@
+BEGIN
+Label1 : Num _ 5;
+Label1 : Num _ 10
+END
